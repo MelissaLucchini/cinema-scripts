@@ -1,0 +1,7 @@
+===============================
+   REPORT CINEMA ASTRA
+   Data: Tue Feb  3 08:51:38 UTC 2026
+===============================
+Biglietti staccati: 78
+Incasso Totale: € 663
+===============================
