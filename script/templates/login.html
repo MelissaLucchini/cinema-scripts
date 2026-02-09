@@ -2,64 +2,104 @@
 <html lang="it">
 <head>
     <meta charset="UTF-8">
-    <title>AstraCinemas - Terminale d'Accesso</title>
+    <title>AstraCinemas - Gate d'Accesso</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
     <style>
         body {
-            background: #0b0d17 url('https://www.transparenttextures.com/patterns/stardust.png');
-            color: #e0e0e0;
-            font-family: 'Orbitron', sans-serif; /* Un font futuristico sarebbe ideale */
+            background: #05050a;
+            background-image: 
+                radial-gradient(white, rgba(255,255,255,.2) 2px, transparent 40px),
+                radial-gradient(white, rgba(255,255,255,.1) 1px, transparent 30px);
+            background-size: 550px 550px, 350px 350px;
+            color: #fff;
+            font-family: 'Orbitron', sans-serif;
             display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0;
+            overflow: hidden;
         }
-        .galaxy-card {
-            background: rgba(15, 15, 35, 0.85);
+
+        .login-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(15px);
             padding: 50px;
             border-radius: 30px;
-            border: 2px solid #4834d4;
-            box-shadow: 0 0 30px #686de0, inset 0 0 15px rgba(104, 109, 224, 0.4);
-            text-align: center; width: 400px;
-            backdrop-filter: blur(10px);
+            border: 1px solid rgba(72, 52, 212, 0.5);
+            box-shadow: 0 0 50px rgba(72, 52, 212, 0.2);
+            text-align: center;
+            width: 400px;
+            animation: float 6s ease-in-out infinite;
         }
-        h1 {
-            color: #fff; text-transform: uppercase; letter-spacing: 4px;
-            text-shadow: 0 0 10px #686de0, 0 0 20px #4834d4; margin-bottom: 5px;
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
         }
-        .subtitle { color: #bebebe; font-size: 0.8em; margin-bottom: 30px; letter-spacing: 2px; }
+
+        h1 { 
+            font-size: 3em; margin: 0; letter-spacing: 8px;
+            background: linear-gradient(to right, #fff, #4834d4);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            filter: drop-shadow(0 0 10px rgba(72, 52, 212, 0.8));
+        }
+
+        .alert-info {
+            font-size: 0.7em; color: #a29bfe; border: 1px solid rgba(162, 155, 254, 0.3);
+            padding: 15px; margin: 25px 0; border-radius: 15px; line-height: 1.6;
+            background: rgba(0,0,0,0.3);
+        }
+
         input {
-            width: 100%; padding: 12px; margin: 12px 0; border-radius: 10px;
-            border: 1px solid #4834d4; background: rgba(255,255,255,0.05);
-            color: #fff; box-sizing: border-box; outline: none;
+            width: 100%; padding: 15px; margin: 10px 0; border-radius: 10px;
+            border: 1px solid #333; background: rgba(0,0,0,0.5);
+            color: #fff; box-sizing: border-box; outline: none; transition: 0.3s;
         }
-        input:focus { border-color: #be2edd; box-shadow: 0 0 10px #be2edd; }
+
+        input:focus { border-color: #be2edd; box-shadow: 0 0 15px #be2edd; }
+
         button {
             background: linear-gradient(45deg, #4834d4, #be2edd);
-            color: white; padding: 15px; border: none; cursor: pointer;
-            width: 100%; border-radius: 10px; font-weight: bold;
-            text-transform: uppercase; margin-top: 20px;
-            transition: 0.3s; box-shadow: 0 5px 15px rgba(0,0,0,0.4);
+            color: white; padding: 15px; border: none; width: 100%;
+            border-radius: 10px; font-weight: bold; cursor: pointer;
+            text-transform: uppercase; margin-top: 15px; transition: 0.3s;
         }
-        button:hover { transform: scale(1.02); box-shadow: 0 0 20px #be2edd; }
-        .flash { color: #ff7979; font-size: 0.9em; margin-bottom: 15px; }
-        a { color: #686de0; text-decoration: none; font-size: 0.9em; transition: 0.3s; }
-        a:hover { color: #be2edd; text-shadow: 0 0 5px #be2edd; }
+
+        button:hover { 
+            transform: scale(1.05); 
+            box-shadow: 0 0 25px #be2edd;
+        }
+
+        .flash { color: #ff7979; margin-bottom: 15px; font-size: 0.8em; }
     </style>
 </head>
 <body>
-    <div class="galaxy-card">
+    <audio id="zipSound" src="https://www.soundjay.com/buttons/sounds/button-20.mp3" preload="auto"></audio>
+
+    <div class="login-card">
         <h1>ASTRA</h1>
-        <div class="subtitle">CINEMAS • GALAXY GATE</div>
+        <p style="font-size: 0.6em; letter-spacing: 4px; color: #686de0;">SISTEMA DI ACCESSO ASTRALE</p>
 
         {% with messages = get_flashed_messages() %}
           {% if messages %}<div class="flash">{{ messages[0] }}</div>{% endif %}
         {% endwith %}
 
-        <form action="/login_action" method="post">
-            <input type="text" name="username" placeholder="Identificativo Pilota" required>
-            <input type="password" name="password" placeholder="Codice Criptato" required>
-            <button type="submit">INIZIA LA PROIEZIONE 🌌</button>
-        </form>
-        <div style="margin-top: 25px;">
-            <a href="/registrati">Nuovo pilota? Registrati alla Flotta</a>
+        <div class="alert-info">
+            🛰️ <b>PROTOCOLLO SICUREZZA</b><br>
+            Registrazione manuale obbligatoria in sede per ottenere le Chiavi Astrali.
         </div>
+
+        <form action="/login_action" method="post">
+            <input type="text" name="username" placeholder="ID PILOTA" required>
+            <input type="password" name="password" placeholder="CHIAVE CRIPTATA" required>
+            <button type="submit" onmouseover="playZip()">AUTENTICAZIONE</button>
+        </form>
     </div>
+
+    <script>
+        function playZip() {
+            var sound = document.getElementById("zipSound");
+            sound.currentTime = 0;
+            sound.play();
+        }
+    </script>
 </body>
 </html>
