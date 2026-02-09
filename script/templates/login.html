@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <title>AstraCinemas - Terminale d'Accesso</title>
+    <style>
+        body {
+            background: #0b0d17 url('https://www.transparenttextures.com/patterns/stardust.png');
+            color: #e0e0e0;
+            font-family: 'Orbitron', sans-serif; /* Un font futuristico sarebbe ideale */
+            display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0;
+        }
+        .galaxy-card {
+            background: rgba(15, 15, 35, 0.85);
+            padding: 50px;
+            border-radius: 30px;
+            border: 2px solid #4834d4;
+            box-shadow: 0 0 30px #686de0, inset 0 0 15px rgba(104, 109, 224, 0.4);
+            text-align: center; width: 400px;
+            backdrop-filter: blur(10px);
+        }
+        h1 {
+            color: #fff; text-transform: uppercase; letter-spacing: 4px;
+            text-shadow: 0 0 10px #686de0, 0 0 20px #4834d4; margin-bottom: 5px;
+        }
+        .subtitle { color: #bebebe; font-size: 0.8em; margin-bottom: 30px; letter-spacing: 2px; }
+        input {
+            width: 100%; padding: 12px; margin: 12px 0; border-radius: 10px;
+            border: 1px solid #4834d4; background: rgba(255,255,255,0.05);
+            color: #fff; box-sizing: border-box; outline: none;
+        }
+        input:focus { border-color: #be2edd; box-shadow: 0 0 10px #be2edd; }
+        button {
+            background: linear-gradient(45deg, #4834d4, #be2edd);
+            color: white; padding: 15px; border: none; cursor: pointer;
+            width: 100%; border-radius: 10px; font-weight: bold;
+            text-transform: uppercase; margin-top: 20px;
+            transition: 0.3s; box-shadow: 0 5px 15px rgba(0,0,0,0.4);
+        }
+        button:hover { transform: scale(1.02); box-shadow: 0 0 20px #be2edd; }
+        .flash { color: #ff7979; font-size: 0.9em; margin-bottom: 15px; }
+        a { color: #686de0; text-decoration: none; font-size: 0.9em; transition: 0.3s; }
+        a:hover { color: #be2edd; text-shadow: 0 0 5px #be2edd; }
+    </style>
+</head>
+<body>
+    <div class="galaxy-card">
+        <h1>ASTRA</h1>
+        <div class="subtitle">CINEMAS • GALAXY GATE</div>
+
+        {% with messages = get_flashed_messages() %}
+          {% if messages %}<div class="flash">{{ messages[0] }}</div>{% endif %}
+        {% endwith %}
+
+        <form action="/login_action" method="post">
+            <input type="text" name="username" placeholder="Identificativo Pilota" required>
+            <input type="password" name="password" placeholder="Codice Criptato" required>
+            <button type="submit">INIZIA LA PROIEZIONE 🌌</button>
+        </form>
+        <div style="margin-top: 25px;">
+            <a href="/registrati">Nuovo pilota? Registrati alla Flotta</a>
+        </div>
+    </div>
+</body>
+</html>

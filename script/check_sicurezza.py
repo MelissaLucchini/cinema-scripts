@@ -1,56 +1,61 @@
 import os
 
-# Configurazioni percorsi
+# Percorsi
 LOG_FILE = "/workspaces/cinema-scripts/dati/accessi_servizio.log"
+BANNED_FILE = "/workspaces/cinema-scripts/dati/user_bannati.log"
 TARGET_USER = "utente_ignoto"
 THRESHOLD = 5
 
-def analizza_accessi():
-    if not os.path.exists(LOG_FILE):
-        print(f"Errore: Il file {LOG_FILE} non esiste.")
-        return
+def carica_ip_bannati():
+    if not os.path.exists(BANNED_FILE): return set()
+    with open(BANNED_FILE, 'r') as f:
+        return set(linea.strip() for linea in f if linea.strip())
 
-    consecutive_count = 0
+def banna_ip(ip):
+    with open(BANNED_FILE, 'a') as f:
+        f.write(f"{ip}\n")
+
+def analizza():
+    bannati = carica_ip_bannati()
+    consecutive_ignoto = 0
     last_ip = None
-    ip_bannati = set()
 
-    with open(LOG_FILE, 'r') as file:
-        for linea in file:
-            linea = linea.strip()
-            if not linea:
-                continue
+    if not os.path.exists(LOG_FILE): return
 
-            # Parsing della linea (split semplice basato sul tuo esempio)
-            # Esempio: 2026-02-03 00:32 | Utente: utente_ignoto | IP: 95.10.22.33
+    with open(LOG_FILE, 'r') as f:
+        for linea in f:
             try:
-                parti = linea.split(" | ")
-                utente = parti[1].replace("Utente: ", "").strip()
-                ip_attuale = parti[2].replace("IP: ", "").strip()
-            except IndexError:
-                continue # Salta linee formattate male
+                # Parsing riga: Data | Utente: nome | IP: ip
+                parti = linea.strip().split(" | ")
+                utente = parti[1].split(": ")[1]
+                ip_attuale = parti[2].split(": ")[1]
+            except: continue
 
-            if utente == TARGET_USER:
-                # Se è lo stesso IP di prima o il primo che incontriamo
-                if ip_attuale == last_ip or last_ip is None:
-                    consecutive_count += 1
-                    last_ip = ip_attuale
+            # REGOLA: Se IP è bannato
+            if ip_attuale in bannati:
+                if utente == TARGET_USER:
+                    print(f"[ALERT] Accesso NEGATO per {ip_attuale}: IP bannato e utente ignoto.")
+                    consecutive_ignoto = 0 # Reset per cambio contesto
+                    continue
                 else:
-                    # L'utente è sempre ignoto ma l'IP è cambiato (reset e riparte da 1)
-                    consecutive_count = 1
-                    last_ip = ip_attuale
-                
-                # Controllo soglia
-                if consecutive_count >= THRESHOLD:
-                    if ip_attuale not in ip_bannati:
-                        print(f"[ALERT] Rilevati {THRESHOLD} accessi consecutivi! BANNATO IP: {ip_attuale}")
-                        ip_bannati.add(ip_attuale)
+                    print(f"[WARNING] IP {ip_attuale} è in blacklist, ma l'utente '{utente}' è autorizzato. Accesso permesso.")
+            
+            # LOGICA COUNTDOWN
+            if utente == TARGET_USER:
+                if ip_attuale == last_ip or last_ip is None:
+                    consecutive_ignoto += 1
+                else:
+                    consecutive_ignoto = 1
+                last_ip = ip_attuale
+
+                if consecutive_ignoto >= THRESHOLD:
+                    print(f"[BAN] Rilevati {THRESHOLD} login ignoti di fila. Banno IP: {ip_attuale}")
+                    banna_ip(ip_attuale)
+                    bannati.add(ip_attuale)
+                    consecutive_ignoto = 0
             else:
-                # Se l'utente NON è ignoto, resetta tutto il countdown
-                consecutive_count = 0
+                consecutive_ignoto = 0
                 last_ip = None
 
-    if not ip_bannati:
-        print("Analisi completata: nessun comportamento sospetto rilevato.")
-
 if __name__ == "__main__":
-    analizza_accessi()
+    analizza()
