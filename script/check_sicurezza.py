@@ -1,61 +1,66 @@
 import os
 
-# Percorsi
-LOG_FILE = "/workspaces/cinema-scripts/dati/accessi_servizio.log"
-BANNED_FILE = "/workspaces/cinema-scripts/dati/user_bannati.log"
-TARGET_USER = "utente_ignoto"
-THRESHOLD = 5
+# --- CONFIGURAZIONE PERCORSI ---
+BASE_DIR = "/workspaces/cinema-scripts/dati"
+LOG_ACCESSI = os.path.join(BASE_DIR, "accessi_servizio.log")
+LOG_SITO = os.path.join(BASE_DIR, "login_sito.log") # Struttura user:pass
+BANNED_FILE = os.path.join(BASE_DIR, "user_bannati.log")
 
-def carica_ip_bannati():
-    if not os.path.exists(BANNED_FILE): return set()
-    with open(BANNED_FILE, 'r') as f:
-        return set(linea.strip() for linea in f if linea.strip())
+def analizza_trusted():
+    # 1. Carichiamo la Blacklist degli IP
+    bannati = set()
+    if os.path.exists(BANNED_FILE):
+        with open(BANNED_FILE, 'r') as f:
+            bannati = {linea.strip() for linea in f if linea.strip()}
 
-def banna_ip(ip):
-    with open(BANNED_FILE, 'a') as f:
-        f.write(f"{ip}\n")
+    # 2. Carichiamo gli utenti TRUSTED dal log del sito (user:pass)
+    utenti_trusted = set()
+    if os.path.exists(LOG_SITO):
+        with open(LOG_SITO, 'r') as f:
+            for linea in f:
+                if ":" in linea:
+                    # Estraiamo solo lo username prima dei due punti
+                    username = linea.split(":")[0].strip()
+                    utenti_trusted.add(username)
 
-def analizza():
-    bannati = carica_ip_bannati()
-    consecutive_ignoto = 0
-    last_ip = None
+    print(f"=== MONITORAGGIO SICUREZZA: TRUSTED USERS CHECK ===")
+    
+    if not os.path.exists(LOG_ACCESSI):
+        print(f"Errore: {LOG_ACCESSI} non trovato.")
+        return
 
-    if not os.path.exists(LOG_FILE): return
-
-    with open(LOG_FILE, 'r') as f:
+    # 3. Analisi del log degli accessi al servizio
+    with open(LOG_ACCESSI, 'r') as f:
         for linea in f:
             try:
-                # Parsing riga: Data | Utente: nome | IP: ip
+                # Parsing: 2026-02-23 10:45 | Utente: nome | IP: ip
                 parti = linea.strip().split(" | ")
-                utente = parti[1].split(": ")[1]
-                ip_attuale = parti[2].split(": ")[1]
-            except: continue
+                timestamp = parti[0]
+                utente_log = parti[1].split(": ")[1]
+                ip_log = parti[2].split(": ")[1]
 
-            # REGOLA: Se IP è bannato
-            if ip_attuale in bannati:
-                if utente == TARGET_USER:
-                    print(f"[ALERT] Accesso NEGATO per {ip_attuale}: IP bannato e utente ignoto.")
-                    consecutive_ignoto = 0 # Reset per cambio contesto
-                    continue
+                # --- LOGICA DI ACCESSO PRIORITARIA ---
+                
+                # REGOLE TRUSTED (Ignora blacklist)
+                if utente_log in utenti_trusted:
+                    status = "[TRUSTED - OK]"
+                    messaggio = f"Utente '{utente_log}' verificato (Accesso garantito nonostante IP)."
+                
+                # REGOLA BLACKLIST (Solo per non-trusted)
+                elif ip_log in bannati:
+                    status = "[ACCESSO NEGATO]"
+                    messaggio = f"IP {ip_log} in blacklist e utente non riconosciuto."
+                
+                # REGOLA UTENTE IGNOTO (Non trusted e IP non bannato)
                 else:
-                    print(f"[WARNING] IP {ip_attuale} è in blacklist, ma l'utente '{utente}' è autorizzato. Accesso permesso.")
-            
-            # LOGICA COUNTDOWN
-            if utente == TARGET_USER:
-                if ip_attuale == last_ip or last_ip is None:
-                    consecutive_ignoto += 1
-                else:
-                    consecutive_ignoto = 1
-                last_ip = ip_attuale
+                    status = "[SOSPETTO]"
+                    utente_log = "UTENTE IGNOTO"
+                    messaggio = "Login non presente nel database del sito."
 
-                if consecutive_ignoto >= THRESHOLD:
-                    print(f"[BAN] Rilevati {THRESHOLD} login ignoti di fila. Banno IP: {ip_attuale}")
-                    banna_ip(ip_attuale)
-                    bannati.add(ip_attuale)
-                    consecutive_ignoto = 0
-            else:
-                consecutive_ignoto = 0
-                last_ip = None
+                print(f"{timestamp} | {status} {utente_log} -> {messaggio}")
+
+            except Exception:
+                continue
 
 if __name__ == "__main__":
-    analizza()
+    analizza_trusted()
