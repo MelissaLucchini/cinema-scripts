@@ -1,35 +1,57 @@
 #!/bin/bash
 
-# 1. Definiamo i file e i percorsi
-FILE_VENDITE="dati/vendite.csv"
-# Creiamo un nome file che contiene la data di oggi, es: report_2026-02-03.txt
+# ==============================================================================
+# 2. REPORT INCASSO GIORNALIERO
+# Descrizione: Script che conta i biglietti venduti, somma i prezzi e genera
+#              un report automatico salvandolo nella cartella di backup.
+# ==============================================================================
+
+# --- CONFIGURAZIONE PERCORSI DINAMICI ---
+# BASE_DIR rileva automaticamente la cartella principale del progetto
+BASE_DIR=$(dirname "$(dirname "$(readlink -f "$0")")")
+FILE_VENDITE="$BASE_DIR/dati/vendite.csv"
+BACKUP_DIR="$BASE_DIR/backup"
+
+# Creiamo un nome file che contiene la data attuale
 DATA_OGGI=$(date +%Y-%m-%d)
-FILE_REPORT="backup/report_$DATA_OGGI.txt"
+FILE_REPORT="$BACKUP_DIR/report_$DATA_OGGI.txt"
 
 echo "--- GENERAZIONE REPORT INCASSI IN CORSO ---"
 
-# 2. Sommiamo i prezzi usando 'awk'
-# awk è un comando di Linux nato apposta per gestire file a colonne (come i CSV)
-# -F',' specifica che il separatore è la virgola
-# 'NR > 1' dice di non leggere la prima riga
-# '{sum += $3}' dice di aggiungere il valore della terza colonna alla variabile 'sum'
-totale_incasso=$(awk -F',' 'NR > 1 {sum += $4} END {print sum}' $FILE_VENDITE)
+# --- CONTROLLO ESISTENZA CARTELLE E FILE ---
+# Crea la cartella backup se manca
+mkdir -p "$BACKUP_DIR"
+
+if [ ! -f "$FILE_VENDITE" ]; then
+    echo "[ERRORE] File vendite non trovato in: $FILE_VENDITE"
+    exit 1
+fi
+
+# --- ELABORAZIONE DATI ---
+# 2. Sommiamo i prezzi usando 'awk' (Punto 2 del README)
+# -F',' specifica il separatore CSV
+# NR > 1 salta l'intestazione
+# sum += $4 somma la quarta colonna (Prezzo)
+totale_incasso=$(awk -F',' 'NR > 1 {sum += $4} END {printf "%.2f", sum}' "$FILE_VENDITE")
 
 # 3. Contiamo i biglietti venduti usando 'grep' e '-c' (count)
-numero_biglietti=$(grep -c "Venduto" $FILE_VENDITE)
+numero_biglietti=$(grep -c "Venduto" "$FILE_VENDITE")
 
-# 4. Creiamo il file di report finale
+# --- GENERAZIONE FILE REPORT ---
+# Usiamo le parentesi graffe per reindirizzare tutto l'output nel file
 {
-    echo "==============================="
-    echo "   REPORT CINEMA ASTRA"
-    echo "   Data: $(date)"
-    echo "==============================="
-    echo "Biglietti staccati: $numero_biglietti"
-    echo "Incasso Totale: € $totale_incasso"
-    echo "==============================="
+    echo "==============================================="
+    echo "          REPORT GIORNALIERO ASTRA"
+    echo "          Data: $(date '+%d/%m/%Y %H:%M')"
+    echo "==============================================="
+    echo " Biglietti totali venduti: $numero_biglietti"
+    echo " Incasso totale calcolato: € $totale_incasso"
+    echo "==============================================="
+    echo " Stato: Elaborazione completata con successo."
 } > "$FILE_REPORT"
 
-# Mostriamo il risultato anche a video per comodità
+# Mostriamo il risultato a video
 cat "$FILE_REPORT"
 
-echo "Report salvato con successo in $FILE_REPORT"
+echo ""
+echo "[OK] Report salvato correttamente in: $FILE_REPORT"

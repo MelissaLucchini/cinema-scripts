@@ -1,55 +1,20 @@
-2026-02-02 23:31 | Utente: cassa1 | IP: 192.168.1.12
-2026-02-03 00:02 | Utente: cassa2 | IP: 192.168.1.11
-2026-02-03 00:32 | Utente: utente_ignoto | IP: 95.10.22.33
-2026-02-03 00:32 | Utente: utente_ignoto | IP: 95.10.22.33
-2026-02-03 00:32 | Utente: utente_ignoto | IP: 95.10.22.33
-2026-02-03 00:32 | Utente: utente_ignoto | IP: 95.10.22.33
-2026-02-03 00:32 | Utente: utente_ignoto | IP: 95.10.22.33
-2026-02-03 01:15 | Utente: melissa | IP: 192.168.1.12
-2026-02-03 01:36 | Utente: cassa1 | IP: 192.168.1.10
-2026-02-03 02:13 | Utente: cassa1 | IP: 192.168.1.10
-2026-02-03 02:33 | Utente: melissa | IP: 192.168.1.10
-2026-02-03 02:47 | Utente: guest | IP: 142.250.180.14
-2026-02-03 03:21 | Utente: melissa | IP: 192.168.1.10
-2026-02-03 03:46 | Utente: admin | IP: 192.168.1.12
-2026-02-03 03:52 | Utente: cassa2 | IP: 192.168.1.10
-2026-02-03 04:25 | Utente: cassa1 | IP: 192.168.1.11
-2026-02-03 04:33 | Utente: melissa | IP: 192.168.1.10
-2026-02-03 04:53 | Utente: melissa | IP: 192.168.1.10
-2026-02-03 05:38 | Utente: admin | IP: 192.168.1.10
-2026-02-03 06:01 | Utente: cassa1 | IP: 192.168.1.11
-2026-02-03 06:28 | Utente: admin | IP: 192.168.1.11
-2026-02-03 06:43 | Utente: cassa1 | IP: 192.168.1.12
-2026-02-03 07:18 | Utente: cassa2 | IP: 192.168.1.12
-2026-02-03 07:37 | Utente: root | IP: 95.10.22.33
-2026-02-03 08:38 | Utente: utente_ignoto | IP: 95.10.22.33
-2026-02-09 12:31 | Utente: utente_ignoto | IP: 127.0.0.1
-2026-02-09 12:31 | Utente: utente_ignoto | IP: 127.0.0.1
-2026-02-09 12:31 | Utente: utente_ignoto | IP: 127.0.0.1
-2026-02-09 12:31 | Utente: utente_ignoto | IP: 127.0.0.1
-2026-02-09 12:31 | Utente: utente_ignoto | IP: 127.0.0.1
-2026-02-09 12:39 | Utente: utente_ignoto | IP: 127.0.0.1
-2026-02-09 12:40 | Utente: utente_ignoto | IP: 127.0.0.1
-2026-02-09 12:40 | Utente: utente_ignoto | IP: 127.0.0.1
-2026-02-09 12:40 | Utente: utente_ignoto | IP: 127.0.0.1
-2026-02-09 12:41 | Utente: utente_ignoto | IP: 127.0.0.1
-2026-02-09 12:41 | Utente: utente_ignoto | IP: 127.0.0.1
-2026-02-09 12:41 | Utente: utente_ignoto | IP: 127.0.0.1
-2026-02-09 12:43 | Utente: a | IP: 127.0.0.1
-2026-02-09 13:03 | Utente: Xanxi | IP: 127.0.0.1
-2026-02-09 13:12 | Utente: Xanxi | IP: 127.0.0.1
-2026-02-09 13:13 | Utente: Xanxi | IP: 127.0.0.1
-2026-02-09 13:19 | Utente: Xanxi | IP: 127.0.0.1
-2026-02-09 13:19 | Utente: Xanxi | IP: 127.0.0.1
-2026-02-09 13:49 | Utente: utente_ignoto | IP: 127.0.0.1
-2026-02-09 13:50 | Utente: utente_ignoto | IP: 127.0.0.1
-2026-02-09 14:05 | Utente: Xanxi | IP: 127.0.0.1
-2026-02-09 14:17:52.868288 | Login Success: Xanxi | IP: 127.0.0.1
-2026-02-09 14:21:34.492607 | Login Success: Xanxi | IP: 127.0.0.1
-2026-02-11 08:06:10.197469 | Login Success: Xanxi | IP: 127.0.0.1
-2026-02-22 18:51:04.326216 | Login Success: a | IP: 127.0.0.1
-2026-02-22 19:12:21.192712 | Login Success: a | IP: 127.0.0.1
-2026-02-22 19:27:15.519171 | Login Success: a | IP: 127.0.0.1
-2026-02-22 19:55:46.023013 | Login Success: a | IP: 127.0.0.1
-2026-02-22 19:57:06.208646 | Login Success: a | IP: 127.0.0.1
-2026-02-22 20:02:25.456180 | Login Success: a | IP: 127.0.0.1
+2026-02-22 23:13 | Utente: cassa2 | IP: 192.168.1.12
+2026-02-22 23:57 | Utente: hacker | IP: 95.10.22.33
+2026-02-23 00:42 | Utente: melissa | IP: 192.168.1.12
+2026-02-23 01:00 | Utente: cassa2 | IP: 192.168.1.10
+2026-02-23 01:06 | Utente: cassa2 | IP: 192.168.1.11
+2026-02-23 01:48 | Utente: root | IP: 203.0.113.5
+2026-02-23 02:00 | Utente: admin | IP: 192.168.1.12
+2026-02-23 02:41 | Utente: cassa1 | IP: 192.168.1.11
+2026-02-23 02:50 | Utente: cassa1 | IP: 192.168.1.11
+2026-02-23 03:07 | Utente: cassa2 | IP: 192.168.1.12
+2026-02-23 03:31 | Utente: cassa1 | IP: 192.168.1.10
+2026-02-23 04:04 | Utente: melissa | IP: 192.168.1.12
+2026-02-23 04:14 | Utente: cassa1 | IP: 192.168.1.11
+2026-02-23 04:28 | Utente: melissa | IP: 192.168.1.10
+2026-02-23 05:06 | Utente: cassa1 | IP: 192.168.1.12
+2026-02-23 05:35 | Utente: cassa1 | IP: 192.168.1.12
+2026-02-23 05:49 | Utente: cassa2 | IP: 192.168.1.12
+2026-02-23 05:58 | Utente: cassa1 | IP: 192.168.1.11
+2026-02-23 06:28 | Utente: cassa1 | IP: 192.168.1.12
+2026-02-23 06:43 | Utente: cassa2 | IP: 192.168.1.10

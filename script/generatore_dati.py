@@ -1,4 +1,5 @@
 import random
+import os
 
 # Configurazione: 2 sale da 50 posti l'una 
 sale = ["Sala_1", "Sala_2"]
@@ -6,8 +7,24 @@ file_sala = ['A', 'B', 'C', 'D', 'E'] # 5 file
 posti_per_fila = range(1, 11) # 10 posti
 
 def genera_dati():
-    # Creiamo/Puliamo i file
-    with open('dati/vendite.csv', 'w') as f_v, open('dati/sensori.log', 'w') as f_s:
+    # --- GESTIONE PERCORSI DINAMICI ---
+    # Otteniamo la cartella dove si trova questo script (cinema-scripts/script)
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    # Risaliamo alla cartella principale (cinema-scripts)
+    root_dir = os.path.dirname(script_dir)
+    # Definiamo il percorso della cartella dati
+    data_dir = os.path.join(root_dir, "dati")
+    
+    # Percorsi completi dei file
+    path_vendite = os.path.join(data_dir, 'vendite.csv')
+    path_sensori = os.path.join(data_dir, 'sensori.log')
+
+    # Creiamo la cartella dati se non esiste (sicurezza extra)
+    if not os.path.exists(data_dir):
+        os.makedirs(data_dir)
+
+    # Creiamo/Puliamo i file usando i percorsi assoluti
+    with open(path_vendite, 'w') as f_v, open(path_sensori, 'w') as f_s:
         f_v.write("Sala,Posto,Stato,Prezzo\n")
         
         guasti_totali = 0
@@ -42,4 +59,4 @@ def genera_dati():
 
 if __name__ == "__main__":
     genera_dati()
-    print("Dati multisala generati! (Massimo 2 guasti hardware inseriti)")
+    print("Dati multisala generati con successo nella cartella 'dati'!")

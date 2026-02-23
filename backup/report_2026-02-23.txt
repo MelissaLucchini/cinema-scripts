@@ -1,0 +1,8 @@
+===============================================
+          REPORT GIORNALIERO ASTRA
+          Data: 23/02/2026 11:06
+===============================================
+ Biglietti totali venduti: 82
+ Incasso totale calcolato: € 697.00
+===============================================
+ Stato: Elaborazione completata con successo.
