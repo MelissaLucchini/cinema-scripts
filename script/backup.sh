@@ -1,54 +1,47 @@
 #!/bin/bash
 
 # ==============================================================================
-# 10. BACKUP DI EMERGENZA
-# Descrizione: Esegue un backup giornaliero del database e dei dati sensibili.
-#              Garantisce il ripristino completo in caso di guasto hardware.
+# ASTRA CINEMAS - DISASTER RECOVERY SYSTEM
+# Descrizione: Crea un backup compresso della cartella dati e lo salva in 'backup'
 # ==============================================================================
 
 # --- CONFIGURAZIONE PERCORSI ---
-# BASE_DIR rileva la cartella principale del progetto
-BASE_DIR=$(dirname "$(dirname "$(readlink -f "$0")")")
-DB_NAME="cinema_db"
-# Usiamo la cartella backup interna al progetto per evitare errori di permessi
-BACKUP_DIR="$BASE_DIR/backup"
-DATE=$(date +%Y-%m-%d)
+# Directory dello script (script/)
+BASE_DIR=$(dirname "$(readlink -f "$0")")
+# Directory sorgente (/workspaces/cinema-scripts/dati)
+SOURCE_DIR=$(dirname "$BASE_DIR")/dati
+# Directory di destinazione (/workspaces/cinema-scripts/backup)
+BACKUP_DIR=$(dirname "$BASE_DIR")/backup
 
-echo "--- AVVIO PROCEDURA DI BACKUP DI EMERGENZA ---"
+# Nome del file: backup_cinema_YYYYMMDD_HHMMSS.tar.gz
+TIMESTAMP=$(date +"%Y%m%d_%H%M%S")
+BACKUP_NAME="backup_cinema_$TIMESTAMP.tar.gz"
 
-# Creiamo la cartella di backup se non esiste
-mkdir -p "$BACKUP_DIR"
+# --- ESECUZIONE ---
 
-# --- ESECUZIONE BACKUP ---
-# Proviamo a eseguire il dump del database. 
-# Se fallisce (perché MariaDB non è attivo), facciamo il backup dei file CSV.
-if command -v mysqldump &> /dev/null; then
-    echo "Esecuzione mysqldump in corso..."
-    mysqldump -u root "$DB_NAME" > "$BACKUP_DIR/${DB_NAME}_$DATE.sql" 2>/dev/null
+# 1. Creazione directory di backup se non esiste
+if [ ! -d "$BACKUP_DIR" ]; then
+    mkdir -p "$BACKUP_DIR"
+    echo "[INFO] Creazione directory backup: $BACKUP_DIR"
 fi
 
-# Controllo: se il file .sql non è stato creato o è vuoto, salviamo i file dati
-if [ ! -s "$BACKUP_DIR/${DB_NAME}_$DATE.sql" ]; then
-    echo "[INFO] Database SQL non trovato. Eseguo backup dei file flat (CSV/LOG)..."
-    # Copiamo i dati correnti in un file temporaneo per il tar
-    cp "$BASE_DIR/dati/vendite.csv" "$BACKUP_DIR/data_backup_$DATE.sql"
-fi
+echo "--- INIZIO PROCEDURA BACKUP ---"
 
-# --- COMPRESSIONE ---
-# Comprimiamo il file risultante
-tar -czf "$BACKUP_DIR/cinema_backup_$DATE.tar.gz" -C "$BACKUP_DIR" "${DB_NAME}_$DATE.sql" 2>/dev/null || \
-tar -czf "$BACKUP_DIR/cinema_backup_$DATE.tar.gz" -C "$BACKUP_DIR" "data_backup_$DATE.sql"
+# 2. Compressione della cartella dati
+# -c: crea, -z: comprimi (gzip), -f: specifica il file
+tar -czf "$BACKUP_DIR/$BACKUP_NAME" -C "$(dirname "$SOURCE_DIR")" dati
 
-# --- PULIZIA ---
-# Rimuoviamo i file .sql temporanei per lasciare solo l'archivio compresso
-rm -f "$BACKUP_DIR"/*.sql
-
-if [ -f "$BACKUP_DIR/cinema_backup_$DATE.tar.gz" ]; then
-    echo "================================================="
-    echo "  [OK] Backup completato con successo!"
-    echo "  File: $BACKUP_DIR/cinema_backup_$DATE.tar.gz"
-    echo "================================================="
+# 3. Verifica esito
+if [ $? -eq 0 ]; then
+    echo "-------------------------------------------------------"
+    echo "[OK] Backup completato con successo!"
+    echo "[FILE] $BACKUP_DIR/$BACKUP_NAME"
+    echo "[DATA] $(date)"
+    echo "-------------------------------------------------------"
 else
-    echo "[ERRORE] Il backup è fallito."
+    echo "[ERRORE] Il backup è fallito. Controllare i permessi del disco."
     exit 1
 fi
+
+# 4. Opzionale: Mantieni solo gli ultimi 7 backup (pulizia automatica)
+# find "$BACKUP_DIR" -name "backup_cinema_*.tar.gz" -mtime +7 -delete
