@@ -62,7 +62,7 @@ def login_action():
 @app.route('/dashboard')
 def dashboard():
     films = [
-        {"id": 1, "titolo": "First Man", "img": "https://m.media-amazon.com/images/M/MV5BMjA5OTUxMDA0MF5BMl5BanBnXkFtZTgwNzY2Nzk0NjM@._V1_.jpg"},
+        {"id": 1, "titolo": "First Man", "img": "https://m.media-amazon.com/images/M/MV5BYmIzYmViN2UtMDRhYy00OTMwLWI5YzctMTQxYzg2ODMwMTIwXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg"},
         {"id": 2, "titolo": "Guardiani della Galassia 2", "img": "https://m.media-amazon.com/images/M/MV5BNjM0NTc0NzItM2FlYS00YzEwLWE0YmUtNTA2ZWIzODc2OTgxXkEyXkFqcGdeQXVyNTgwNzIyNzg@._V1_.jpg"}
     ]
     return render_template('dashboard.html', films=films)
