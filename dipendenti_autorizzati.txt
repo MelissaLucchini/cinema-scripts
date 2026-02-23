@@ -1,0 +1,1 @@
+echo "admin,cassa1,cassa2,melissa" > dati/dipendenti_autorizzati.txt
