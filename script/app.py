@@ -3,29 +3,26 @@ import csv
 from flask import Flask, render_template, request, redirect, url_for, flash
 from datetime import datetime
 
+# Se la cartella templates è dentro 'script', Flask la trova così:
 app = Flask(__name__)
 app.secret_key = 'astracinemas_exclusive_galactic_key'
 
-# --- CONFIGURAZIONE PERCORSI ---
+# --- CONFIGURAZIONE PERCORSI DATI (Assoluti per sicurezza) ---
 BASE_DIR = "/workspaces/cinema-scripts/dati"
-CREDENTIALS_FILE = f"{BASE_DIR}/login_sito.log"
-ACCESS_LOG = f"{BASE_DIR}/accessi_servizio.log"
-SALES_FILE = f"{BASE_DIR}/vendite.csv"
+CREDENTIALS_FILE = os.path.join(BASE_DIR, "login_sito.log")
+ACCESS_LOG = os.path.join(BASE_DIR, "accessi_servizio.log")
+SALES_FILE = os.path.join(BASE_DIR, "vendite.csv")
 
-# Assicuriamoci che i file esistano
+# Assicuriamoci che la cartella dati esista
 os.makedirs(BASE_DIR, exist_ok=True)
-for f in [CREDENTIALS_FILE, ACCESS_LOG, SALES_FILE]:
-    if not os.path.exists(f):
-        open(f, 'a').close()
 
 def get_posti_occupati(sala_richiesta):
-    """Filtra dal CSV solo i posti effettivamente venduti per la sala scelta"""
     occupati = []
     if os.path.exists(SALES_FILE):
-        with open(SALES_FILE, 'r') as f:
+        with open(SALES_FILE, 'r', encoding='utf-8') as f:
             reader = csv.reader(f)
+            next(reader, None) # Salta intestazione
             for row in reader:
-                # Struttura: Sala_1, A1, Venduto, 8.50
                 if len(row) >= 3:
                     if row[0].strip() == sala_richiesta and row[2].strip() == "Venduto":
                         occupati.append(row[1].strip())
@@ -43,19 +40,19 @@ def login_action():
     
     users = {}
     if os.path.exists(CREDENTIALS_FILE):
-        with open(CREDENTIALS_FILE, "r") as f:
+        with open(CREDENTIALS_FILE, "r", encoding='utf-8') as f:
             for line in f:
                 if ":" in line:
                     u, p = line.strip().split(":", 1)
                     users[u] = p
 
     if user in users and users[user] == pw:
-        with open(ACCESS_LOG, "a") as f:
+        with open(ACCESS_LOG, "a", encoding='utf-8') as f:
             f.write(f"{datetime.now()} | Login Success: {user} | IP: {ip}\n")
         return redirect(url_for('dashboard'))
     else:
-        with open(ACCESS_LOG, "a") as f:
-            f.write(f"{datetime.now()} | Login Failed: utente_ignoto | IP: {ip}\n")
+        with open(ACCESS_LOG, "a", encoding='utf-8') as f:
+            f.write(f"{datetime.now()} | Login Failed: {user if user else 'ignoto'} | IP: {ip}\n")
         flash("Identità non riconosciuta nel database della Flotta.")
         return redirect(url_for('home'))
 
@@ -73,9 +70,9 @@ def sala(num_sala):
     film = "First Man" if num_sala == 1 else "Guardiani della Galassia 2"
     occupati = get_posti_occupati(sala_id)
     
-    # Griglia 5x5: A1..E5
+    # Griglia 5x10 (A1..E10)
     file_lettere = ['A', 'B', 'C', 'D', 'E']
-    mappa_posti = [f"{l}{n}" for l in file_lettere for n in range(1, 6)]
+    mappa_posti = [f"{l}{n}" for l in file_lettere for n in range(1, 11)]
     
     return render_template('sala.html', sala=sala_id, film=film, posti=mappa_posti, occupati=occupati)
 
@@ -83,15 +80,33 @@ def sala(num_sala):
 def compra():
     sala_id = request.form.get('sala')
     posto = request.form.get('posto')
+    
     if not posto:
         flash("Seleziona una coordinata di atterraggio (posto)!")
         return redirect(request.referrer)
 
-    with open(SALES_FILE, 'a', newline='') as f:
-        writer = csv.writer(f)
-        writer.writerow([sala_id, posto, "Venduto", "8.50"])
+    # --- LOGICA SOVRASCRITTURA (NO DOPPIONI) ---
+    righe_aggiornate = []
+    intestazione = ["Sala", "Posto", "Stato", "Prezzo"]
+    
+    if os.path.exists(SALES_FILE):
+        with open(SALES_FILE, 'r', newline='', encoding='utf-8') as f:
+            reader = csv.reader(f)
+            intestazione = next(reader, intestazione)
+            for row in reader:
+                # Se la riga è quella acquistata, la modifichiamo
+                if len(row) >= 2 and row[0] == sala_id and row[1] == posto:
+                    row[2] = "Venduto"
+                    row[3] = "8.50"
+                righe_aggiornate.append(row)
+
+        # Riscriviamo tutto il file da zero (sovrascrivendo i vecchi dati)
+        with open(SALES_FILE, 'w', newline='', encoding='utf-8') as f:
+            writer = csv.writer(f)
+            writer.writerow(intestazione)
+            writer.writerows(righe_aggiornate)
     
     return render_template('conferma.html', sala=sala_id, posto=posto)
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000, debug=True)
+    app.run(host='0.0.0.0', port=8000, debug=True)

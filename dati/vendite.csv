@@ -49,7 +49,7 @@ Sala_1,E7,Libero,0.00
 Sala_1,E8,Libero,0.00
 Sala_1,E9,Libero,0.00
 Sala_1,E10,Libero,0.00
-Sala_2,A1,Libero,0.00
+Sala_2,A1,Venduto,8.50
 Sala_2,A2,Libero,0.00
 Sala_2,A3,Libero,0.00
 Sala_2,A4,Libero,0.00
@@ -99,3 +99,4 @@ Sala_2,E7,Libero,0.00
 Sala_2,E8,Libero,0.00
 Sala_2,E9,Libero,0.00
 Sala_2,E10,Libero,0.00
+Sala_1,A2,Venduto,8.50
